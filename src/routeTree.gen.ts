@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiVideoInfoRouteImport } from './routes/api/video-info'
 import { Route as ApiSubtitlesRouteImport } from './routes/api/subtitles'
+import { Route as ApiOpenapiDotjsonRouteImport } from './routes/api/openapi[.]json'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,33 +29,47 @@ const ApiSubtitlesRoute = ApiSubtitlesRouteImport.update({
   path: '/api/subtitles',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiOpenapiDotjsonRoute = ApiOpenapiDotjsonRouteImport.update({
+  id: '/api/openapi.json',
+  path: '/api/openapi.json',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
   '/api/video-info': typeof ApiVideoInfoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
   '/api/video-info': typeof ApiVideoInfoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
   '/api/video-info': typeof ApiVideoInfoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/subtitles' | '/api/video-info'
+  fullPaths: '/' | '/api/openapi.json' | '/api/subtitles' | '/api/video-info'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/subtitles' | '/api/video-info'
-  id: '__root__' | '/' | '/api/subtitles' | '/api/video-info'
+  to: '/' | '/api/openapi.json' | '/api/subtitles' | '/api/video-info'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/openapi.json'
+    | '/api/subtitles'
+    | '/api/video-info'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiOpenapiDotjsonRoute: typeof ApiOpenapiDotjsonRoute
   ApiSubtitlesRoute: typeof ApiSubtitlesRoute
   ApiVideoInfoRoute: typeof ApiVideoInfoRoute
 }
@@ -82,11 +97,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSubtitlesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/openapi.json': {
+      id: '/api/openapi.json'
+      path: '/api/openapi.json'
+      fullPath: '/api/openapi.json'
+      preLoaderRoute: typeof ApiOpenapiDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiOpenapiDotjsonRoute: ApiOpenapiDotjsonRoute,
   ApiSubtitlesRoute: ApiSubtitlesRoute,
   ApiVideoInfoRoute: ApiVideoInfoRoute,
 }
