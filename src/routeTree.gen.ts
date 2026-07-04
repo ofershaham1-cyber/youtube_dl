@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiVideoInfoRouteImport } from './routes/api/video-info'
 import { Route as ApiSubtitlesRouteImport } from './routes/api/subtitles'
 import { Route as ApiOpenapiDotjsonRouteImport } from './routes/api/openapi[.]json'
 
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const ApiOpenapiDotjsonRoute = ApiOpenapiDotjsonRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
   '/api/video-info': typeof ApiVideoInfoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
   '/api/video-info': typeof ApiVideoInfoRoute
@@ -50,18 +58,25 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
   '/api/video-info': typeof ApiVideoInfoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/openapi.json' | '/api/subtitles' | '/api/video-info'
+  fullPaths:
+    | '/'
+    | '/docs'
+    | '/api/openapi.json'
+    | '/api/subtitles'
+    | '/api/video-info'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/openapi.json' | '/api/subtitles' | '/api/video-info'
+  to: '/' | '/docs' | '/api/openapi.json' | '/api/subtitles' | '/api/video-info'
   id:
     | '__root__'
     | '/'
+    | '/docs'
     | '/api/openapi.json'
     | '/api/subtitles'
     | '/api/video-info'
@@ -69,6 +84,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DocsRoute: typeof DocsRoute
   ApiOpenapiDotjsonRoute: typeof ApiOpenapiDotjsonRoute
   ApiSubtitlesRoute: typeof ApiSubtitlesRoute
   ApiVideoInfoRoute: typeof ApiVideoInfoRoute
@@ -76,6 +92,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -109,6 +132,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DocsRoute: DocsRoute,
   ApiOpenapiDotjsonRoute: ApiOpenapiDotjsonRoute,
   ApiSubtitlesRoute: ApiSubtitlesRoute,
   ApiVideoInfoRoute: ApiVideoInfoRoute,
