@@ -9,38 +9,96 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiVideoInfoRouteImport } from './routes/api/video-info'
+import { Route as ApiSubtitlesRouteImport } from './routes/api/subtitles'
+import { Route as ApiOpenapiDotjsonRouteImport } from './routes/api/openapi[.]json'
 
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVideoInfoRoute = ApiVideoInfoRouteImport.update({
+  id: '/api/video-info',
+  path: '/api/video-info',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSubtitlesRoute = ApiSubtitlesRouteImport.update({
+  id: '/api/subtitles',
+  path: '/api/subtitles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiOpenapiDotjsonRoute = ApiOpenapiDotjsonRouteImport.update({
+  id: '/api/openapi.json',
+  path: '/api/openapi.json',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
+  '/api/subtitles': typeof ApiSubtitlesRoute
+  '/api/video-info': typeof ApiVideoInfoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
+  '/api/subtitles': typeof ApiSubtitlesRoute
+  '/api/video-info': typeof ApiVideoInfoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/docs': typeof DocsRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
+  '/api/subtitles': typeof ApiSubtitlesRoute
+  '/api/video-info': typeof ApiVideoInfoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/docs'
+    | '/api/openapi.json'
+    | '/api/subtitles'
+    | '/api/video-info'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/docs' | '/api/openapi.json' | '/api/subtitles' | '/api/video-info'
+  id:
+    | '__root__'
+    | '/'
+    | '/docs'
+    | '/api/openapi.json'
+    | '/api/subtitles'
+    | '/api/video-info'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DocsRoute: typeof DocsRoute
+  ApiOpenapiDotjsonRoute: typeof ApiOpenapiDotjsonRoute
+  ApiSubtitlesRoute: typeof ApiSubtitlesRoute
+  ApiVideoInfoRoute: typeof ApiVideoInfoRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +106,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/video-info': {
+      id: '/api/video-info'
+      path: '/api/video-info'
+      fullPath: '/api/video-info'
+      preLoaderRoute: typeof ApiVideoInfoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/subtitles': {
+      id: '/api/subtitles'
+      path: '/api/subtitles'
+      fullPath: '/api/subtitles'
+      preLoaderRoute: typeof ApiSubtitlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/openapi.json': {
+      id: '/api/openapi.json'
+      path: '/api/openapi.json'
+      fullPath: '/api/openapi.json'
+      preLoaderRoute: typeof ApiOpenapiDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DocsRoute: DocsRoute,
+  ApiOpenapiDotjsonRoute: ApiOpenapiDotjsonRoute,
+  ApiSubtitlesRoute: ApiSubtitlesRoute,
+  ApiVideoInfoRoute: ApiVideoInfoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
