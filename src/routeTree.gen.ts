@@ -12,8 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiVideoInfoRouteImport } from './routes/api/video-info'
+import { Route as ApiTranslateTranscriptRouteImport } from './routes/api/translate-transcript'
+import { Route as ApiTranscriptSupportedLanguagesRouteImport } from './routes/api/transcript-supported-languages'
 import { Route as ApiSubtitlesRouteImport } from './routes/api/subtitles'
 import { Route as ApiOpenapiDotjsonRouteImport } from './routes/api/openapi[.]json'
+import { Route as ApiDefaultTranscriptLanguagesRouteImport } from './routes/api/default-transcript-languages'
 
 const DocsRoute = DocsRouteImport.update({
   id: '/docs',
@@ -30,6 +33,17 @@ const ApiVideoInfoRoute = ApiVideoInfoRouteImport.update({
   path: '/api/video-info',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTranslateTranscriptRoute = ApiTranslateTranscriptRouteImport.update({
+  id: '/api/translate-transcript',
+  path: '/api/translate-transcript',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTranscriptSupportedLanguagesRoute =
+  ApiTranscriptSupportedLanguagesRouteImport.update({
+    id: '/api/transcript-supported-languages',
+    path: '/api/transcript-supported-languages',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiSubtitlesRoute = ApiSubtitlesRouteImport.update({
   id: '/api/subtitles',
   path: '/api/subtitles',
@@ -40,27 +54,42 @@ const ApiOpenapiDotjsonRoute = ApiOpenapiDotjsonRouteImport.update({
   path: '/api/openapi.json',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDefaultTranscriptLanguagesRoute =
+  ApiDefaultTranscriptLanguagesRouteImport.update({
+    id: '/api/default-transcript-languages',
+    path: '/api/default-transcript-languages',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
+  '/api/default-transcript-languages': typeof ApiDefaultTranscriptLanguagesRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
+  '/api/transcript-supported-languages': typeof ApiTranscriptSupportedLanguagesRoute
+  '/api/translate-transcript': typeof ApiTranslateTranscriptRoute
   '/api/video-info': typeof ApiVideoInfoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
+  '/api/default-transcript-languages': typeof ApiDefaultTranscriptLanguagesRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
+  '/api/transcript-supported-languages': typeof ApiTranscriptSupportedLanguagesRoute
+  '/api/translate-transcript': typeof ApiTranslateTranscriptRoute
   '/api/video-info': typeof ApiVideoInfoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
+  '/api/default-transcript-languages': typeof ApiDefaultTranscriptLanguagesRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
+  '/api/transcript-supported-languages': typeof ApiTranscriptSupportedLanguagesRoute
+  '/api/translate-transcript': typeof ApiTranslateTranscriptRoute
   '/api/video-info': typeof ApiVideoInfoRoute
 }
 export interface FileRouteTypes {
@@ -68,25 +97,42 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/docs'
+    | '/api/default-transcript-languages'
     | '/api/openapi.json'
     | '/api/subtitles'
+    | '/api/transcript-supported-languages'
+    | '/api/translate-transcript'
     | '/api/video-info'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/docs' | '/api/openapi.json' | '/api/subtitles' | '/api/video-info'
+  to:
+    | '/'
+    | '/docs'
+    | '/api/default-transcript-languages'
+    | '/api/openapi.json'
+    | '/api/subtitles'
+    | '/api/transcript-supported-languages'
+    | '/api/translate-transcript'
+    | '/api/video-info'
   id:
     | '__root__'
     | '/'
     | '/docs'
+    | '/api/default-transcript-languages'
     | '/api/openapi.json'
     | '/api/subtitles'
+    | '/api/transcript-supported-languages'
+    | '/api/translate-transcript'
     | '/api/video-info'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DocsRoute: typeof DocsRoute
+  ApiDefaultTranscriptLanguagesRoute: typeof ApiDefaultTranscriptLanguagesRoute
   ApiOpenapiDotjsonRoute: typeof ApiOpenapiDotjsonRoute
   ApiSubtitlesRoute: typeof ApiSubtitlesRoute
+  ApiTranscriptSupportedLanguagesRoute: typeof ApiTranscriptSupportedLanguagesRoute
+  ApiTranslateTranscriptRoute: typeof ApiTranslateTranscriptRoute
   ApiVideoInfoRoute: typeof ApiVideoInfoRoute
 }
 
@@ -113,6 +159,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiVideoInfoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/translate-transcript': {
+      id: '/api/translate-transcript'
+      path: '/api/translate-transcript'
+      fullPath: '/api/translate-transcript'
+      preLoaderRoute: typeof ApiTranslateTranscriptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/transcript-supported-languages': {
+      id: '/api/transcript-supported-languages'
+      path: '/api/transcript-supported-languages'
+      fullPath: '/api/transcript-supported-languages'
+      preLoaderRoute: typeof ApiTranscriptSupportedLanguagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/subtitles': {
       id: '/api/subtitles'
       path: '/api/subtitles'
@@ -127,16 +187,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiOpenapiDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/default-transcript-languages': {
+      id: '/api/default-transcript-languages'
+      path: '/api/default-transcript-languages'
+      fullPath: '/api/default-transcript-languages'
+      preLoaderRoute: typeof ApiDefaultTranscriptLanguagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DocsRoute: DocsRoute,
+  ApiDefaultTranscriptLanguagesRoute: ApiDefaultTranscriptLanguagesRoute,
   ApiOpenapiDotjsonRoute: ApiOpenapiDotjsonRoute,
   ApiSubtitlesRoute: ApiSubtitlesRoute,
+  ApiTranscriptSupportedLanguagesRoute: ApiTranscriptSupportedLanguagesRoute,
+  ApiTranslateTranscriptRoute: ApiTranslateTranscriptRoute,
   ApiVideoInfoRoute: ApiVideoInfoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

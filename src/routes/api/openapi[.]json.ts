@@ -35,6 +35,88 @@ export const Route = createFileRoute("/api/openapi.json")({
                 },
               },
             },
+            "/api/transcript-supported-languages": {
+              get: {
+                summary: "List supported transcript languages for a YouTube video",
+                parameters: [
+                  {
+                    name: "videoID",
+                    in: "query",
+                    required: true,
+                    schema: { type: "string" },
+                    description: "YouTube video ID",
+                    example: "dQw4w9WgXcQ",
+                  },
+                ],
+                responses: {
+                  "200": { description: "Supported transcript languages" },
+                  "400": { description: "Missing videoID parameter" },
+                  "502": { description: "Upstream DownSub error" },
+                },
+              },
+            },
+            "/api/default-transcript-languages": {
+              get: {
+                summary: "List the default transcript languages for a YouTube video",
+                parameters: [
+                  {
+                    name: "videoID",
+                    in: "query",
+                    required: true,
+                    schema: { type: "string" },
+                    description: "YouTube video ID",
+                    example: "dQw4w9WgXcQ",
+                  },
+                ],
+                responses: {
+                  "200": { description: "Default transcript languages" },
+                  "400": { description: "Missing videoID parameter" },
+                  "502": { description: "Upstream DownSub error" },
+                },
+              },
+            },
+            "/api/translate-transcript": {
+              get: {
+                summary: "Translate a transcript for a YouTube video",
+                parameters: [
+                  {
+                    name: "videoID",
+                    in: "query",
+                    required: true,
+                    schema: { type: "string" },
+                    description: "YouTube video ID",
+                    example: "dQw4w9WgXcQ",
+                  },
+                  {
+                    name: "language",
+                    in: "query",
+                    required: false,
+                    schema: { type: "string", default: "en" },
+                    description: "Source transcript language",
+                  },
+                  {
+                    name: "targetLanguage",
+                    in: "query",
+                    required: true,
+                    schema: { type: "string" },
+                    description: "Target translation language",
+                    example: "es",
+                  },
+                  {
+                    name: "type",
+                    in: "query",
+                    required: false,
+                    schema: { type: "string", enum: ["srt", "vtt", "txt"], default: "srt" },
+                    description: "Subtitle file format",
+                  },
+                ],
+                responses: {
+                  "200": { description: "Translated transcript content" },
+                  "400": { description: "Missing videoID or targetLanguage parameter" },
+                  "502": { description: "Upstream DownSub error" },
+                },
+              },
+            },
             "/api/subtitles": {
               get: {
                 summary: "Fetch a subtitle track as JSON or file download",

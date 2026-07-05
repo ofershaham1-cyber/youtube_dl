@@ -24,6 +24,13 @@ export interface VideoInfo {
   raw: unknown;
 }
 
+export interface TranscriptLanguage {
+  code: string;
+  name: string;
+  source: "manual" | "auto";
+  isDefault?: boolean;
+}
+
 function base64url(input: string): string {
   // input is a binary string
   return btoa(input).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -112,14 +119,92 @@ export function buildSubtitleDownloadUrl(params: {
   format: SubtitleFormat;
   title: string;
   language?: string;
+  firstLanguage?: string;
+  secondLanguage?: string;
+  defaultLanguage?: string;
 }): string {
-  const { subtitleUrl, format, title, language } = params;
+  const { subtitleUrl, format, title, language, firstLanguage, secondLanguage, defaultLanguage } = params;
   let base = `${API_SUBTITLE}${format}/`;
   if (subtitleUrl) base += `${subtitleUrl}/`;
   const qs = new URLSearchParams();
   qs.set("title", title || "subtitle");
   if (language) qs.set("language", language);
+  if (firstLanguage) qs.set("firstLanguage", firstLanguage);
+  if (secondLanguage) qs.set("secondLanguage", secondLanguage);
+  if (defaultLanguage) qs.set("defaultLanguage", defaultLanguage);
   return `${base}?${qs.toString()}`;
+}
+
+function toLanguageRecord(entry: SubtitleEntry, source: "manual" | "auto", isDefault = false): TranscriptLanguage {
+  return {
+    code: entry.code?.trim() || entry.name?.trim() || "unknown",
+    name: entry.name?.trim() || entry.code?.trim() || "Unknown",
+    source,
+    isDefault,
+  };
+}
+
+function isDefaultFlag(value: unknown): boolean {
+  return value === true || value === 1 || value === "true" || value === "1";
+}
+
+export function getTranscriptSupportedLanguages(info: VideoInfo): TranscriptLanguage[] {
+  const byCode = new Map<string, TranscriptLanguage>();
+
+  for (const entry of info.subtitles) {
+    const key = (entry.code || entry.name || "unknown").trim().toLowerCase();
+    if (!byCode.has(key)) {
+      byCode.set(key, toLanguageRecord(entry, "manual"));
+    }
+  }
+
+  for (const entry of info.subtitlesAutoTrans) {
+    const key = (entry.code || entry.name || "unknown").trim().toLowerCase();
+    const existing = byCode.get(key);
+    if (existing) {
+      if (existing.source !== "manual") {
+        byCode.set(key, toLanguageRecord(entry, "auto"));
+      }
+      continue;
+    }
+    byCode.set(key, toLanguageRecord(entry, "auto"));
+  }
+
+  return Array.from(byCode.values());
+}
+
+export function getDefaultTranscriptLanguages(info: VideoInfo): TranscriptLanguage[] {
+  const raw = info.raw as Record<string, unknown> | undefined;
+  const manualEntries = Array.isArray(raw?.subtitles) ? raw.subtitles : [];
+  const autoEntries = Array.isArray(raw?.subtitlesAutoTrans) ? raw.subtitlesAutoTrans : [];
+
+  const explicitDefaults = [
+    ...manualEntries.map((entry) => ({ entry, source: "manual" as const })),
+    ...autoEntries.map((entry) => ({ entry, source: "auto" as const })),
+  ].filter(({ entry }) => {
+    const record = entry as Record<string, unknown> | undefined;
+    return (
+      isDefaultFlag(record?.isDefault) ||
+      isDefaultFlag(record?.default) ||
+      isDefaultFlag(record?.is_default)
+    );
+  });
+
+  if (explicitDefaults.length > 0) {
+    return explicitDefaults.map(({ entry, source }) =>
+      toLanguageRecord(entry as SubtitleEntry, source, true),
+    );
+  }
+
+  if (info.subtitles.length > 0) {
+    return [toLanguageRecord(info.subtitles[0], "manual", true)];
+  }
+
+  if (info.subtitlesAutoTrans.length > 0) {
+    return [toLanguageRecord(info.subtitlesAutoTrans[0], "auto", true)];
+  }
+
+  return [];
 }
 
 export function pickSubtitle(
@@ -189,6 +274,72 @@ export async function fetchSubtitle(params: {
     format: params.format,
     language: picked.entry.code,
     languageName: picked.entry.name,
+    isAutoTranslated: picked.isAutoTrans,
+    downloadUrl,
+    content,
+  };
+}
+
+export async function fetchTranslatedSubtitle(params: {
+  videoUrlOrId: string;
+  format: SubtitleFormat;
+  language: string;
+  targetLanguage: string;
+  includeAutoTrans?: boolean;
+}): Promise<{
+  title: string;
+  format: SubtitleFormat;
+  language: string;
+  languageName: string;
+  translatedLanguage: string;
+  isAutoTranslated: boolean;
+  downloadUrl: string;
+  content: string;
+}> {
+  if (!params.targetLanguage) {
+    throw new Error("A targetLanguage is required to translate a transcript");
+  }
+
+  const info = await fetchVideoInfo(params.videoUrlOrId);
+  if (info.state === 3) throw new Error("DownSub could not process this video");
+  const picked = pickSubtitle(info, params.language, {
+    includeAutoTrans: params.includeAutoTrans,
+  });
+  if (!picked) {
+    const available = [
+      ...info.subtitles.map((s) => s.code),
+      ...info.subtitlesAutoTrans.map((s) => `${s.code} (auto)`),
+    ];
+    throw new Error(
+      `No subtitle for language "${params.language}". Available: ${available.join(", ") || "none"}`,
+    );
+  }
+
+  const downloadUrl = buildSubtitleDownloadUrl({
+    subtitleUrl: picked.entry.url,
+    format: params.format,
+    title: info.title || "subtitle",
+    language: picked.entry.code,
+    firstLanguage: picked.entry.code,
+    secondLanguage: params.targetLanguage,
+    defaultLanguage: params.targetLanguage,
+  });
+  const res = await fetch(downloadUrl, {
+    signal: AbortSignal.timeout(10_000),
+    headers: {
+      "user-agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+      referer: "https://downsub.com/",
+    },
+  });
+  if (!res.ok) throw new Error(`Translated subtitle download failed: HTTP ${res.status}`);
+  const content = await res.text();
+  return {
+    title: info.title,
+    format: params.format,
+    language: picked.entry.code,
+    languageName: picked.entry.name,
+    translatedLanguage: params.targetLanguage,
     isAutoTranslated: picked.isAutoTrans,
     downloadUrl,
     content,
