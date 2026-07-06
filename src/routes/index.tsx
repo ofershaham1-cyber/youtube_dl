@@ -73,8 +73,9 @@ function Index() {
           <h1 className="text-3xl font-bold tracking-tight">DownSub Subtitle API</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Fetch YouTube subtitles by URL, format and language. See the full API at{" "}
-            <a className="underline" href="/docs">/docs</a> (Swagger UI) or{" "}
-            <a className="underline" href="/api/openapi.json">/api/openapi.json</a>.
+            <a className="underline" href="/docs">/docs</a> (Swagger UI),{" "}
+            <a className="underline" href="/api/openapi.json">/api/openapi.json</a>, or{" "}
+            <a className="underline" href="/logs">/logs</a> for server request logs.
           </p>
         </header>
 

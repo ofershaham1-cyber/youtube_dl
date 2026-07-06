@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LogsRouteImport } from './routes/logs'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiVideoInfoRouteImport } from './routes/api/video-info'
@@ -18,6 +19,11 @@ import { Route as ApiSubtitlesRouteImport } from './routes/api/subtitles'
 import { Route as ApiOpenapiDotjsonRouteImport } from './routes/api/openapi[.]json'
 import { Route as ApiDefaultTranscriptLanguagesRouteImport } from './routes/api/default-transcript-languages'
 
+const LogsRoute = LogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocsRoute = DocsRouteImport.update({
   id: '/docs',
   path: '/docs',
@@ -64,6 +70,7 @@ const ApiDefaultTranscriptLanguagesRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
+  '/logs': typeof LogsRoute
   '/api/default-transcript-languages': typeof ApiDefaultTranscriptLanguagesRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
+  '/logs': typeof LogsRoute
   '/api/default-transcript-languages': typeof ApiDefaultTranscriptLanguagesRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
+  '/logs': typeof LogsRoute
   '/api/default-transcript-languages': typeof ApiDefaultTranscriptLanguagesRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/docs'
+    | '/logs'
     | '/api/default-transcript-languages'
     | '/api/openapi.json'
     | '/api/subtitles'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/docs'
+    | '/logs'
     | '/api/default-transcript-languages'
     | '/api/openapi.json'
     | '/api/subtitles'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/docs'
+    | '/logs'
     | '/api/default-transcript-languages'
     | '/api/openapi.json'
     | '/api/subtitles'
@@ -128,6 +140,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DocsRoute: typeof DocsRoute
+  LogsRoute: typeof LogsRoute
   ApiDefaultTranscriptLanguagesRoute: typeof ApiDefaultTranscriptLanguagesRoute
   ApiOpenapiDotjsonRoute: typeof ApiOpenapiDotjsonRoute
   ApiSubtitlesRoute: typeof ApiSubtitlesRoute
@@ -138,6 +151,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/logs': {
+      id: '/logs'
+      path: '/logs'
+      fullPath: '/logs'
+      preLoaderRoute: typeof LogsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs': {
       id: '/docs'
       path: '/docs'
@@ -200,6 +220,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DocsRoute: DocsRoute,
+  LogsRoute: LogsRoute,
   ApiDefaultTranscriptLanguagesRoute: ApiDefaultTranscriptLanguagesRoute,
   ApiOpenapiDotjsonRoute: ApiOpenapiDotjsonRoute,
   ApiSubtitlesRoute: ApiSubtitlesRoute,

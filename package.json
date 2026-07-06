@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "vitest run tests/e2e-page-stability.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

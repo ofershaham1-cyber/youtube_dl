@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/docs")({
   head: () => ({
@@ -17,29 +18,45 @@ export const Route = createFileRoute("/docs")({
 });
 
 function DocsPage() {
-  const bootstrap = `
-    (function () {
-      function init() {
-        window.ui = window.SwaggerUIBundle({
-          url: '/api/openapi.json',
-          dom_id: '#swagger-ui',
-          deepLinking: true,
-          presets: [window.SwaggerUIBundle.presets.apis],
-        });
+  useEffect(() => {
+    // Only run on client side
+    if (typeof window === "undefined") return;
+
+    const loadSwaggerUI = () => {
+      try {
+        if (window.SwaggerUIBundle) {
+          window.ui = window.SwaggerUIBundle({
+            url: "/api/openapi.json",
+            dom_id: "#swagger-ui",
+            deepLinking: true,
+            presets: [window.SwaggerUIBundle.presets.apis],
+          });
+        } else {
+          console.warn("SwaggerUIBundle is not available");
+        }
+      } catch (error) {
+        console.error("Failed to initialize Swagger UI:", error);
       }
-      if (window.SwaggerUIBundle) init();
-      else {
-        var s = document.createElement('script');
-        s.src = 'https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js';
-        s.onload = init;
-        document.head.appendChild(s);
-      }
-    })();
-  `;
+    };
+
+    // Check if SwaggerUIBundle is already loaded
+    if (window.SwaggerUIBundle) {
+      loadSwaggerUI();
+    } else {
+      // Load the script dynamically
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js";
+      script.onload = loadSwaggerUI;
+      script.onerror = () => {
+        console.error("Failed to load Swagger UI script");
+      };
+      document.head.appendChild(script);
+    }
+  }, []);
+
   return (
     <div style={{ background: "#fff", minHeight: "100vh" }}>
       <div id="swagger-ui" />
-      <script dangerouslySetInnerHTML={{ __html: bootstrap }} />
     </div>
   );
 }
