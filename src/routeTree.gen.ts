@@ -16,6 +16,7 @@ import { Route as ApiVideoInfoRouteImport } from './routes/api/video-info'
 import { Route as ApiTranslateTranscriptRouteImport } from './routes/api/translate-transcript'
 import { Route as ApiTranscriptSupportedLanguagesRouteImport } from './routes/api/transcript-supported-languages'
 import { Route as ApiSubtitlesRouteImport } from './routes/api/subtitles'
+import { Route as ApiPlaylistRouteImport } from './routes/api/playlist'
 import { Route as ApiOpenapiDotjsonRouteImport } from './routes/api/openapi[.]json'
 import { Route as ApiDefaultTranscriptLanguagesRouteImport } from './routes/api/default-transcript-languages'
 
@@ -55,6 +56,11 @@ const ApiSubtitlesRoute = ApiSubtitlesRouteImport.update({
   path: '/api/subtitles',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPlaylistRoute = ApiPlaylistRouteImport.update({
+  id: '/api/playlist',
+  path: '/api/playlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiOpenapiDotjsonRoute = ApiOpenapiDotjsonRouteImport.update({
   id: '/api/openapi.json',
   path: '/api/openapi.json',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/logs': typeof LogsRoute
   '/api/default-transcript-languages': typeof ApiDefaultTranscriptLanguagesRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
+  '/api/playlist': typeof ApiPlaylistRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
   '/api/transcript-supported-languages': typeof ApiTranscriptSupportedLanguagesRoute
   '/api/translate-transcript': typeof ApiTranslateTranscriptRoute
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/logs': typeof LogsRoute
   '/api/default-transcript-languages': typeof ApiDefaultTranscriptLanguagesRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
+  '/api/playlist': typeof ApiPlaylistRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
   '/api/transcript-supported-languages': typeof ApiTranscriptSupportedLanguagesRoute
   '/api/translate-transcript': typeof ApiTranslateTranscriptRoute
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/logs': typeof LogsRoute
   '/api/default-transcript-languages': typeof ApiDefaultTranscriptLanguagesRoute
   '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
+  '/api/playlist': typeof ApiPlaylistRoute
   '/api/subtitles': typeof ApiSubtitlesRoute
   '/api/transcript-supported-languages': typeof ApiTranscriptSupportedLanguagesRoute
   '/api/translate-transcript': typeof ApiTranslateTranscriptRoute
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/logs'
     | '/api/default-transcript-languages'
     | '/api/openapi.json'
+    | '/api/playlist'
     | '/api/subtitles'
     | '/api/transcript-supported-languages'
     | '/api/translate-transcript'
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/logs'
     | '/api/default-transcript-languages'
     | '/api/openapi.json'
+    | '/api/playlist'
     | '/api/subtitles'
     | '/api/transcript-supported-languages'
     | '/api/translate-transcript'
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/logs'
     | '/api/default-transcript-languages'
     | '/api/openapi.json'
+    | '/api/playlist'
     | '/api/subtitles'
     | '/api/transcript-supported-languages'
     | '/api/translate-transcript'
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   LogsRoute: typeof LogsRoute
   ApiDefaultTranscriptLanguagesRoute: typeof ApiDefaultTranscriptLanguagesRoute
   ApiOpenapiDotjsonRoute: typeof ApiOpenapiDotjsonRoute
+  ApiPlaylistRoute: typeof ApiPlaylistRoute
   ApiSubtitlesRoute: typeof ApiSubtitlesRoute
   ApiTranscriptSupportedLanguagesRoute: typeof ApiTranscriptSupportedLanguagesRoute
   ApiTranslateTranscriptRoute: typeof ApiTranslateTranscriptRoute
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSubtitlesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/playlist': {
+      id: '/api/playlist'
+      path: '/api/playlist'
+      fullPath: '/api/playlist'
+      preLoaderRoute: typeof ApiPlaylistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/openapi.json': {
       id: '/api/openapi.json'
       path: '/api/openapi.json'
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   LogsRoute: LogsRoute,
   ApiDefaultTranscriptLanguagesRoute: ApiDefaultTranscriptLanguagesRoute,
   ApiOpenapiDotjsonRoute: ApiOpenapiDotjsonRoute,
+  ApiPlaylistRoute: ApiPlaylistRoute,
   ApiSubtitlesRoute: ApiSubtitlesRoute,
   ApiTranscriptSupportedLanguagesRoute: ApiTranscriptSupportedLanguagesRoute,
   ApiTranslateTranscriptRoute: ApiTranslateTranscriptRoute,

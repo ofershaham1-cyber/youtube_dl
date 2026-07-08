@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { applyTheme, resolveTheme, setTheme as persistTheme, type ThemeMode } from "@/lib/theme";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
+  const [theme, setTheme] = useState<ThemeMode>("light");
   const [url, setUrl] = useState("https://www.youtube.com/watch?v=prSfxdmjNzE");
   const [type, setType] = useState<"srt" | "vtt" | "txt">("srt");
   const [language, setLanguage] = useState("en");
@@ -17,6 +19,20 @@ function Index() {
   const [transcriptResult, setTranscriptResult] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [transcriptError, setTranscriptError] = useState<string>("");
+
+  useEffect(() => {
+    const initialTheme = resolveTheme();
+    setTheme(initialTheme);
+    applyTheme(initialTheme);
+  }, []);
+
+  useEffect(() => {
+    persistTheme(theme);
+  }, [theme]);
+
+  function toggleTheme() {
+    setTheme((current) => (current === "dark" ? "light" : "dark"));
+  }
 
   async function run(e: React.FormEvent) {
     e.preventDefault();
@@ -69,14 +85,24 @@ function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-3xl px-6 py-10">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">DownSub Subtitle API</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Fetch YouTube subtitles by URL, format and language. See the full API at{" "}
-            <a className="underline" href="/docs">/docs</a> (Swagger UI),{" "}
-            <a className="underline" href="/api/openapi.json">/api/openapi.json</a>, or{" "}
-            <a className="underline" href="/logs">/logs</a> for server request logs.
-          </p>
+        <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">DownSub Subtitle API</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Fetch YouTube subtitles by URL, format and language. See the full API at{" "}
+              <a className="underline" href="/docs">/docs</a> (Swagger UI),{" "}
+              <a className="underline" href="/api/openapi.json">/api/openapi.json</a>, or{" "}
+              <a className="underline" href="/logs">/logs</a> for server request logs.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="rounded-md border px-3 py-2 text-sm font-medium"
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          >
+            {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
+          </button>
         </header>
 
         <form onSubmit={run} className="space-y-4 rounded-lg border p-6">
